@@ -9,7 +9,7 @@ type Potato struct {
     IO           chan byte
 }
 
-func Create(memoryWidth, memoryHeight int, instructions string, io chan byte) *Potato {
+func New(memoryWidth, memoryHeight int, instructions string, io chan byte) *Potato {
     memory := make([][]byte, memoryWidth)
     for i  := range memory { memory[i] = make([]byte, memoryHeight) }
     return &Potato{
@@ -38,6 +38,7 @@ func (p *Potato)Read() (i byte, b bool) {
 func (p *Potato)Tick() bool {
     i, c := p.Read()
     if !c { return false}
+    p.LastExecuted = p.LastExecuted[:0]
     p.Execute(i)
     return true
 }
@@ -46,7 +47,6 @@ func (p *Potato)Evaluate() {
     for p.Tick() {}
 }
 func (p *Potato)Execute(i byte) {
-    p.LastExecuted = p.LastExecuted[:0]
     p.LastExecuted = append(p.LastExecuted, p.I)
     switch i {
             case '^': p.Y = max(0                   , p.Y - 1)
@@ -57,13 +57,13 @@ func (p *Potato)Execute(i byte) {
             case '-': p.Memory[p.X][p.Y] -= 1
             case '_': p.Memory[p.X][p.Y] = <-p.IO
             case '~': p.IO <- p.Memory[p.X][p.Y]
+            case ' ', '\t', '\n': p.Tick()
             case '?', '!':
                     j, c := p.Read()
                     if ! c { return }
                     m := p.Memory[p.X][p.Y];
                     if (m == 0) != (i == '!') { return }
                     p.Execute(j)
-                    p.LastExecuted = append(p.LastExecuted, p.I)
             default : switch {
                 case isUpperLetter(i): p.Lables[i + 32] = p.I - 1
                 case isLowerLetter(i): p.I = p.Lables[i]
