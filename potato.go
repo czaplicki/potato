@@ -1,8 +1,5 @@
 package potato
 
-// import "fmt"
-// import "time"
-
 type Potato struct {
     X, Y, I      int
     Memory       [][]byte
@@ -12,7 +9,7 @@ type Potato struct {
     IO           chan byte
 }
 
-func CreatePotato(memoryWidth, memoryHeight int, instructions string, io chan byte) *Potato {
+func Create(memoryWidth, memoryHeight int, instructions string, io chan byte) *Potato {
     memory := make([][]byte, memoryWidth)
     for i  := range memory { memory[i] = make([]byte, memoryHeight) }
     return &Potato{
