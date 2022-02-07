@@ -9,7 +9,7 @@ type Potato struct {
     IO           chan byte
 }
 
-func New(memoryWidth, memoryHeight int, instructions string, io chan byte) *Potato {
+func New(memoryWidth, memoryHeight int, instructions string) *Potato {
     memory := make([][]byte, memoryWidth)
     for i  := range memory { memory[i] = make([]byte, memoryHeight) }
     return &Potato{
@@ -18,7 +18,7 @@ func New(memoryWidth, memoryHeight int, instructions string, io chan byte) *Pota
         make(map[byte] int, 25),
         instructions,
         make([]int, 8),
-        io,
+        make(chan byte),
     }
 }
 
